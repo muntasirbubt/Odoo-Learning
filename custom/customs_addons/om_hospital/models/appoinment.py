@@ -25,9 +25,7 @@ class HospitalAppointment(models.Model):
     pharmacy_line_ids = fields.One2many('appointment.pharmacy.lines', 'appointment_id', string="Pharmacy Lines")
 
     # For Hide One2many Column Based On Parent Record
-    hide_sales_price = fields.Boolean(string= 'Hide Sales Price')
-
-
+    hide_sales_price = fields.Boolean(string='Hide Sales Price')
 
     # for every change in patient id this onchange_patient_id function will call every time
     @api.onchange('patient_id')
@@ -59,8 +57,8 @@ class HospitalAppointment(models.Model):
             r.state = 'done'
 
     def action_cancel(self):
-        for r in self:
-            r.state = 'cancle'
+        action = self.env.ref('om_hospital.action_cancel_appointment').read()[0]
+        return action
 
     def action_draft(self):
         for r in self:
@@ -77,6 +75,3 @@ class HospitalAppointment(models.Model):
                 'type': 'rainbow_man',
             }
         }
-
-
-
