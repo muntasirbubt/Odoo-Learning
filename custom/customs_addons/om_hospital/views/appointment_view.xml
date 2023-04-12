@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <!--    For Appointment activity view-->
+
+    <record id="view_hospital_appointment_activity" model="ir.ui.view">
+        <field name="name">hospital.appointment.activity</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <activity string="Appointment">
+                <field name="patient_id"/>
+                <templates>
+                    <div t-name="activity-box">
+                        <img t-att-src="activity_image('hospital.patient', 'image', record.patient_id.raw_value)"
+                             t-att-title="record.patient_id.value" t-att-alt="record.patient_id.value"/>
+                        <div>
+                            <field name="ref" display="full"/>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+    <!--                    For tree view-->
+
+
+    <record id="view_hospital_appointment_tree" model="ir.ui.view">
+        <field name="name">hospital.appointment.tree</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <!--                    For remove/disable the create and duplicate= create="0",for edit&ndash;&gt;edit="0", delete="0",-->
+            <tree decoration-success="state == 'done'"
+                  decoration-danger="state == 'cancle'"
+                  decoration-warning="state == 'in_consultation'"
+                  decoration-info="state == 'draft'"
+                  sample='1'
+                  multi_edit="1"
+            >
+                <field name="patient_id"/>
+                <!--                 For appointment time and booking time-->
+                <field name="appointment_time"/>
+                <!--                insert 'optional' keyword for Dynamic tree view-->
+                <field name="booking_date" optional="show"/>
+                <field name="activity_ids" widget="list_activity"/>
+                <!--just for trial of dynamic tree view-->
+                <field name="gender" optional="hide"/>
+                <field name="ref" optional="hide"/>
+                <field name='doctor_id' widget='many2one_avatar_user'/>
+
+
+                <!--                &lt;!&ndash; Another colum named state and decorate this colum using decoration-success,decoration-danger, decoration-muted,  decoration-info&ndash;&gt;-->
+                <!--                decoration-success- green -->
+                <!--                decoration-danger = red  -->
+                <!--                decoration-warning= orange -->
+                <!--                decoration-info= no color -->
+                <field name='state' decoration-success="state == 'done'"
+                       decoration-danger="state == 'cancle'"
+                       decoration-warning="state == 'in_consultation'"
+                       decoration-info="state == 'draft'"
+                       widget='badge'/>
+            </tree>
+        </field>
+    </record>
+
+
+    <!--End of activity view-->
+
+    <!--For form view-->
+    <record id="view_hospital_appointment_form" model="ir.ui.view">
+        <field name="name">hospital.appointment.form</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+                <!--For statusbar-->
+                <header>
+                    <button name='action_in_consultation' string='In Consultation' type='object' states='draft'
+                            class="oe_highlight" data-hotkey='i'/>
+
+                    <!-- states added in done because mark as done button will onli when recorn is in 'in_consultations' state-->
+                    <button name='action_done' string='Mark as Done' type='object' states='in_consultation,cancle'
+                            class="oe_highlight" data-hotkey='v'/>
+
+                    <button name='action_cancel' string='Cancel' type='object' states="draft,in_consultation"
+                            data-hotkey='z'/>
+                    <button name='action_draft' string='Reset to Draft' type='object' states="cancle" data-hotkey='r'/>
+
+
+                    <!--  options="{'clickable':'1'}"-->
+                    <field name="state" widget="statusbar" nolabel="1"
+                           statusbar_visible="draft,in_consultation,done"/>
+                </header>
+                <!--End of status bar-->
+                <sheet>
+                    <!-- for prioroty in the data-->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="priority" widget="priority" class="mr-5"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="gender"/>
+                            <field name="ref"/>
+                            <field name='doctor_id' widget='many2one_avatar'/>
+
+                        </group>
+                        <group>
+                            <!--                            hide sales field for hide the sales_price-->
+                            <!--                                Add 'groups' for show this field only in debug mode-->
+                            <field name="hide_sales_price" groups="base.group_no_one"/>
+                            <field name="appointment_time"/>
+                            <field name="booking_date" default_focus='1'/>
+                            <!--                                Add 'groups' for show this button only in debug mode-->
+                            <button name="action_test" string='Object Button'
+                                    confirm='Are you ready for action button Action?'
+                                    help="On clicking this object button this will print a messege in python log"
+                                    groups="base.group_no_one"
+                                    type="object" class="oe_highlight"/>
+                            <!--                                Add 'groups' for show this button only in debug mode-->
+                            <button name="%(action_of_action_button)d" string='Action Button'
+                                    confirm='Are you ready for action button Action?' type="action"
+                                    groups="base.group_no_one"
+                                    help="On clicking this action button you will go to male filter page in Appiontment"
+                                    class="oe_highlight"/>
+
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string='Prescription' name='prescription'>
+                            <!--                        For html feild-->
+                            <!--                        In the html feild we add options for collaborative and for resizable -->
+                            <field name="prescription" placeholder="Enter you prescription"
+                                   options="{'collaborative' :true, 'resizable': true, 'codeview':True }"/>
+                        </page>
+                        <page string='Pharmacy' name="pharmacy">
+                            <!--         For one2Many feild-->
+
+                            <field name="pharmacy_line_ids">
+                                <!--              editbale 'bottom' dily form view te e dirictly edit kora jabe-->
+                                <!--              editbale 'top' dily form view te e dirictly edit kora jabe-->
+                                <tree editable='bottom'>
+                                    <!--             Tree view for pharmacy page of nootebook-->
+                                    <field name="product_id"/>
+                                    <!--             Hide One2many Column Based On Parent Record-->
+                                    <field name="price_unit"
+                                           attrs="{'column_invisible': [('parent.hide_sales_price', '!=',  False)]}"
+                                    />
+                                    <field name="qty"/>
+                                </tree>
+                                <!--                Form view for pharmacy page of nootebook-->
+                                <form>
+                                    <group>
+                                        <field name="product_id"/>
+                                        <!--        Hide One2many Column Based On Parent Record-->
+                                        <field name="price_unit"
+                                               attrs="{'column_invisible': [('parent.hide_sales_price', '!=',  False)]}"
+                                        />
+                                        <field name="qty"/>
+                                    </group>
+
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <!-- For add  Chatter-->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                <!--                End of chatter-->
+            </form>
+        </field>
+    </record>
+    <!--End of form view-->
+
+
+    <!--For Search view-->
+    <record id="view_hospital_appointment_search" model="ir.ui.view">
+        <field name="name">hospital.appointment.search</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <search>
+                <filter name="filter_male" string="Male" domain="[('gender', '=', 'male')]"/>
+
+            </search>
+        </field>
+    </record>
+
+
+    <!--for action button create a new action-->
+    <record id="action_of_action_button" model="ir.actions.act_window">
+        <field name="name">Action Button</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.appointment</field>
+        <field name="view_mode">tree</field>
+
+        <field name="context">{'search_default_filter_male':1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create Nothing but something!
+            </p>
+        </field>
+    </record>
+
+
+    <record id="action_hospital_appointment" model="ir.actions.act_window">
+        <field name="name">Appointments</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.appointment</field>
+        <field name="view_mode">tree,form,activity</field>
+
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create Your First appointment!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_appointment"
+              name="Appointments"
+              action="action_hospital_appointment"
+              parent="menu_appointment_root"
+              sequence="0"/>
+
+
+</odoo>
