@@ -1,0 +1,21 @@
+<?xml version ="1.0" encoding ="utf-8" ?>
+
+<!--For inherit model and add field to a model-->
+<odoo>
+    <data>
+        <record id="view_order_form_inherit" model="ir.ui.view">
+            <field name="name">sale.order.inherit</field>
+            <field name="model">sale.order</field>
+            <field name ='priority'>333</field>
+<!--            inherit the model where external id is sale.view_order_form-->
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name='confirmed_user_id'/>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+
+</odoo>

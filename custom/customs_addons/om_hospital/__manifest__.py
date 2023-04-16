@@ -6,7 +6,7 @@
     'name': 'Hospital Management',
     'version': '1.0.0',
     'category': 'Hospital',
-    'author':'Muntasir',
+    'author': 'Muntasir',
 
     'sequence': -100,
     'summary': 'Hospital Management System',
@@ -16,6 +16,8 @@
     'data': [
         'security/ir.model.access.csv',
         'data/patient_tag_data.xml',
+        'data/patient.tag.csv',
+        'data/sequence_data.xml',
         'wizard/cancel_appointment_view.xml',
         'views/menu.xml',
         'views/patient_view.xml',
@@ -24,7 +26,6 @@
         'views/kids_patient_view.xml',
         'views/appointment_view.xml',
         'views/patient_tag_view.xml',
-
 
     ],
     'demo': [],

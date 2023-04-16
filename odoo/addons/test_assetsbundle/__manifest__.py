@@ -9,7 +9,7 @@
     'installable': True,
     'data': [
         "data/ir_asset.xml",
-        "views/views.xml",
+        "views/sale_order_view.xml",
     ],
     'auto_install': False,
 

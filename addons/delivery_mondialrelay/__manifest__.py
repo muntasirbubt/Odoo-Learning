@@ -14,7 +14,7 @@
     'depends': ['delivery'],
     'data': [
         'data/data.xml',
-        'views/views.xml',
+        'views/sale_order_view.xml',
         'wizard/choose_delivery_carrier_views.xml',
     ],
     'assets': {
