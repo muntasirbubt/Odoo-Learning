@@ -47,7 +47,7 @@ class Hospital_Patient(models.Model):
     # For override the Write method
     def write(self, vals):
         print("Write method is triggered", vals)
-        if not self.ref and not vals.get('ref'):
+        if not self.ref and not  vals.get('ref'):
             vals['ref'] = self.env['ir.sequence'].next_by_code('hospital.patient')
             return super(Hospital_Patient, self).write(vals)
 
@@ -61,3 +61,14 @@ class Hospital_Patient(models.Model):
                 reco.age = today.year - reco.date_of_birth.year
             else:
                 reco.age = 0
+
+    # def name_get(self):
+    #     patient_list =[]
+    #     for record in self:
+    #         name = record.ref +" "+ record.name
+    #         patient_list.append((record.id,name))
+    #
+    #     return patient_list
+
+    def name_get(self):
+        return [(record.id, "[%s] %s" %(record.ref,record.name)) for record in self]
