@@ -44,9 +44,12 @@ class Hospital_Patient(models.Model):
         vals['ref'] = self.env['ir.sequence'].next_by_code('hospital.patient')
         return super(Hospital_Patient, self).create(vals)
 
-
-
-
+    # For override the Write method
+    def write(self, vals):
+        print("Write method is triggered", vals)
+        if not self.ref and not vals.get('ref'):
+            vals['ref'] = self.env['ir.sequence'].next_by_code('hospital.patient')
+            return super(Hospital_Patient, self).write(vals)
 
     # form calculate the age from date of Birth and
     @api.depends('date_of_birth')
