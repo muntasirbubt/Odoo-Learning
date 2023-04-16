@@ -9,18 +9,22 @@ class HospitalAppointment(models.Model):
     _rec_name = 'patient_id'
 
     patient_id = fields.Many2one('hospital.patient', string='Patient')
-    # For a related field use related='patient_id.gender_new'and for change the value use readonly = False
+
+     # For a related field use related='patient_id.gender_new'and for change the value use readonly = False
     gender = fields.Selection(related='patient_id.gender_new', readonly=False)
+
     # for appointment time and booking time
     # add default for set these 2 variables default when creating a new form
     appointment_time = fields.Datetime(string="appointment time", default=fields.Datetime.now)
     booking_date = fields.Date(string="Booking Date", default=fields.Date.context_today, help="Insert the booking date")
+
     # For define HTML feild
     prescription = fields.Html(string="Prescription")
     ref = fields.Char(string="Reference", help='Reference of the patient from the patient record')
 
     doctor_id = fields.Many2one('res.users', string='Doctor')
     active = fields.Boolean(string="Active", default=True)
+
     # For one2many write like 'ids' then fields.One2many(which model you need to show, "a many2one relation from this model", string)
     pharmacy_line_ids = fields.One2many('appointment.pharmacy.lines', 'appointment_id', string="Pharmacy Lines")
 

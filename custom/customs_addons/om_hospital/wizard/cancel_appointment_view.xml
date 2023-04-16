@@ -13,6 +13,7 @@
                         <field name="reason"/>
                     </group>
                     <group>
+                        <field name="date_cancel"/>
                     </group>
                     <footer>
                         <button name="action_cancel" string ='Cancel Appointment' type= 'object' data-hotkey="v" class="btn-primary"/>
