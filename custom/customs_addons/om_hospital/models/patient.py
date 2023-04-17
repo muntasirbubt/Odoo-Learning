@@ -31,6 +31,8 @@ class Hospital_Patient(models.Model):
     # For Many2Many
     tag_ids = fields.Many2many('patient.tag', string='Tags')
 
+    appointment_count = fields.Integer(string= "Appointment Count")
+
     # for statusbar option in patient record  page
     state = fields.Selection([('draft', 'Draft'),
                               ('in_consultation', 'In Consultation'),
