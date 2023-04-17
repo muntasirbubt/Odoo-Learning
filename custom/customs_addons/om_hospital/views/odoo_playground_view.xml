@@ -11,7 +11,7 @@
                     <field name="code" widget='ace' options="{'mode': 'python'}"/>
                 </group>
                 <group>
-                    <button name="action_execute" string="Execute" type='object' class='bin-primary' data-hotkey="q"/>
+                    <button name="action_execute" string="Execute" type='object' class="oe_highlight" data-hotkey="q" />
                 </group>
                 <group>
                     <field name="result"/>
