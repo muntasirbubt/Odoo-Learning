@@ -44,7 +44,7 @@
                         </group>
                         <group>
                             <field name="ref"/>
-                            <field name="gender_new"/>
+                            <field name="gender_new" invisible="context.get('hide_gender')"/>
                             <field name="tag_ids" widget='many2many_tags' options="{'color_field':'color_new'}"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -78,11 +78,11 @@
 
                                 </tree>
 
-                                <form edit='0'>
+                                <form >
                                     <group>
                                         <group>
                                             <field name="patient_id"/>
-                                            <field name="gender"/>
+                                            <field name="gender" />
                                             <field name="ref"/>
                                             <field name="doctor_id" widget="many2one_avatar"/>
 

@@ -10,7 +10,7 @@ class HospitalAppointment(models.Model):
 
     patient_id = fields.Many2one('hospital.patient', string='Patient')
 
-     # For a related field use related='patient_id.gender_new'and for change the value use readonly = False
+    # For a related field use related='patient_id.gender_new'and for change the value use readonly = False
     gender = fields.Selection(related='patient_id.gender_new', readonly=False)
 
     # for appointment time and booking time
@@ -52,9 +52,24 @@ class HospitalAppointment(models.Model):
         ('done', 'Done'),
         ('cancle', 'Cancelled')], default='draft', string="Status", required=True)
 
+    @api.model
+    def create(self, vals):
+        # add reference value in function by ref
+        vals['ref'] = self.env['ir.sequence'].next_by_code('hospital.appointment')
+        return super(HospitalAppointment, self).create(vals)
+
+    # For override the Write method
+    def write(self, vals):
+        print("Write method is triggered", vals)
+        if not self.ref and not vals.get('ref'):
+            vals['ref'] = self.env['ir.sequence'].next_by_code('hospital.appointment')
+        return super(HospitalAppointment, self).write(vals)
+
     def action_in_consultation(self):
-        for r in self:
-            r.state = 'in_consultation'
+        for rec in self:
+            if rec.state == 'draft':
+                rec.state = 'in_consultation'
+                print('Done')
 
     def action_done(self):
         for r in self:

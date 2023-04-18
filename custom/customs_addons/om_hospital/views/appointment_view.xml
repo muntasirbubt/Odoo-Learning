@@ -77,14 +77,15 @@
                     <button name='action_in_consultation' string='In Consultation' type='object' states='draft'
                             class="oe_highlight" data-hotkey='i'/>
 
-                    <!-- states added in done because mark as done button will onli when recorn is in 'in_consultations' state-->
+                    <!-- states added in done because mark as done button will show when record is in 'in_consultations' state-->
                     <button name='action_done' string='Mark as Done' type='object' states='in_consultation,cancle'
                             class="oe_highlight" data-hotkey='v'/>
-
-                    <!--                    <button name='%(om_hospital.action_cancel_appointment)d' string='Cancel' type='action' states="draft,in_consultation"-->
-                    <!--                            data-hotkey='z'/>-->
-                    <button name='action_cancel' string='Cancel' type='object' states="draft,in_consultation"
-                            data-hotkey='z'/>
+                    <!--context = "{'default_appointment_id':active_id}"-->
+                    <button name='%(om_hospital.action_cancel_appointment)d' string='Cancel' type='action'
+                            context = "{'default_reason':'komu nah', 'hide_appointment':1}"
+                            states="draft,in_consultation" data-hotkey='z'/>
+<!--                    <button name='action_cancel' string='Cancel' type='object' states="draft,in_consultation"-->
+<!--                            data-hotkey='z'/>-->
                     <button name='action_draft' string='Reset to Draft' type='object' states="cancle" data-hotkey='r'/>
 
 

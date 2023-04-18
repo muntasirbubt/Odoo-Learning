@@ -1,5 +1,6 @@
 import datetime
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 class CancelAppointmentWizard(models.TransientModel):
     _name = "cancel.appointment.wizard"
@@ -11,6 +12,8 @@ class CancelAppointmentWizard(models.TransientModel):
         print("Default get executed")
         res = super(CancelAppointmentWizard,self).default_get(fields)
         res['date_cancel'] = datetime.date.today()
+        # if self.env.context.get('active_id'):
+        #     res['appointment_id'] = self.env.context.get('active_id')
         return res
 
     appointment_id = fields.Many2one("hospital.appointment", string='Appoinment For')
@@ -18,5 +21,7 @@ class CancelAppointmentWizard(models.TransientModel):
     date_cancel = fields.Date(string ='Cancellation Date')
 
     def action_cancel(self):
+        if self.appointment_id.booking_date == fields.date.today():
+            raise ValidationError(_("For Testing"))
         return
 
