@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 from datetime import date
+from odoo.exceptions import ValidationError
 
 
 class Hospital_Patient(models.Model):
@@ -17,6 +18,15 @@ class Hospital_Patient(models.Model):
 
     # date of Birth fields for calculate the age and age will be the computed field
     date_of_birth = fields.Date(string="Date Of Birth")
+
+    @api.constrains('date_of_birth')
+    def  _check_date_of_birth(self):
+        for i in self:
+            if i.date_of_birth and i.date_of_birth > fields.Date.today():
+                raise ValidationError(_("The entered date of birth is must be less then today"))
+
+
+
     age = fields.Integer(string='age', compute='compute_age', tracking=True, store=True)
     kids = fields.Integer(string='kids', compute="kids_func")
     gender_new = fields.Selection([('male', 'Male'), ('female', 'Female')], string="Gender New", tracking=True,
@@ -66,6 +76,17 @@ class Hospital_Patient(models.Model):
                 reco.age = today.year - reco.date_of_birth.year
             else:
                 reco.age = 0
+
+
+
+
+
+
+
+
+
+
+
 
     # def name_get(self):
     #     patient_list =[]
