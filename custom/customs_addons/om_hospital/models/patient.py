@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from datetime import date
 from odoo.exceptions import ValidationError
 
@@ -9,22 +9,30 @@ class Hospital_Patient(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Hospital Patient"
 
-
     # add tracking = true for tracking like when anyone change name in log we will see which things changed
     name = fields.Char(string='Name', tracking=True)
     ref = fields.Char(string="Reference")
-
     appointment_id = fields.Many2one('hospital.appointment', string="Appointments")
-
     # date of Birth fields for calculate the age and age will be the computed field
     date_of_birth = fields.Date(string="Date Of Birth")
+    appointment_counter = fields.Integer(string="Appointment Count",  compute='_compute_appointment_count', store = True)
+    appointment_ids = fields.One2many('hospital.appointment', 'patient_id', string= "Appointment")
+    marital_status = fields.Selection([('single','Single'), ('married','Married')], string="Maritial Status")
+    partner_name = fields.Char(string="Partner Name")
+    parent = fields.Char(string="Parent")
+
+
+    @api.depends('appointment_ids')
+    def _compute_appointment_count(self):
+        for i in self:
+            i.appointment_counter = self.env['hospital.appointment'].search_count([('patient_id', '=', i.id)])
+
 
     @api.constrains('date_of_birth')
     def  _check_date_of_birth(self):
         for i in self:
             if i.date_of_birth and i.date_of_birth > fields.Date.today():
-                raise ValidationError(_("The entered date of birth is must be less then today"))
-
+                raise ValidationError(_("The Entered date of birth is not acceptable"))
 
 
     age = fields.Integer(string='age', compute='compute_age', tracking=True, store=True)
@@ -50,6 +58,10 @@ class Hospital_Patient(models.Model):
                               ('done', 'Done'),
                               ('cancle', 'Cancelled')], default='done', string='Status', required=True)
 
+
+
+
+
     # inherit create method
     @api.model
     def create(self, vals):
@@ -65,7 +77,6 @@ class Hospital_Patient(models.Model):
         return super(Hospital_Patient, self).write(vals)
 
 
-
     # form calculate the age from date of Birth and
     @api.depends('date_of_birth')
     def compute_age(self):
@@ -76,25 +87,3 @@ class Hospital_Patient(models.Model):
                 reco.age = today.year - reco.date_of_birth.year
             else:
                 reco.age = 0
-
-
-
-
-
-
-
-
-
-
-
-
-    # def name_get(self):
-    #     patient_list =[]
-    #     for record in self:
-    #         name = record.ref +" "+ record.name
-    #         patient_list.append((record.id,name))
-    #
-    #     return patient_list
-
-    # def name_get(self):
-    #     return [(record.id, "[%s] %s" %(record.ref,record.name)) for record in self]

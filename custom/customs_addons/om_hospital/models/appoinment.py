@@ -1,5 +1,5 @@
-from odoo import api, fields, models
-
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 class HospitalAppointment(models.Model):
     _name = "hospital.appointment"
@@ -7,8 +7,9 @@ class HospitalAppointment(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Hospital Appointment"
     _rec_name = 'patient_id'
-
-    patient_id = fields.Many2one('hospital.patient', string='Patient')
+   # ondelete restrict dily record ta delete kora jby nh
+    #ondelete casecade
+    patient_id = fields.Many2one('hospital.patient', string='Patient', ondelete='cascade')
 
     # For a related field use related='patient_id.gender_new'and for change the value use readonly = False
     gender = fields.Selection(related='patient_id.gender_new', readonly=False)
@@ -57,6 +58,15 @@ class HospitalAppointment(models.Model):
         # add reference value in function by ref
         vals['ref'] = self.env['ir.sequence'].next_by_code('hospital.appointment')
         return super(HospitalAppointment, self).create(vals)
+
+    # For removing the delete option in done state record
+    def unlink(self):
+        print("TEST Unlike")
+        if self.state != 'draft':
+            raise ValidationError(_("You can delete the record which is only in draft state"))
+
+        return super(HospitalAppointment, self).unlink()
+        
 
     # For override the Write method
     def write(self, vals):
