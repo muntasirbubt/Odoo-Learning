@@ -5,13 +5,13 @@
         <field name="name">hospital.patient.tree</field>
         <field name="model">hospital.patient</field>
         <field name="arch" type="xml">
-<!--      export_xlsx for remove the option of download the data csv file-->
-            <tree export_xlsx = "0"
-                    decoration-success="gender_new =='male'"
+            <!--      export_xlsx for remove the option of download the data csv file-->
+            <tree export_xlsx="0"
+                  decoration-success="gender_new =='male'"
                   decoration-danger="gender_new == 'female'">
 
-                <!--                <field name="image" widget="image" class="oe_avatar"/>-->
 
+                <!--                <field name="image" widget="image" class="oe_avatar"/>-->
                 <field name="name" string="Patient Name"/>
                 <field name="ref" optional="hide"/>
                 <field name="age"/>
@@ -36,26 +36,38 @@
                 <sheet>
                     <!--                            For image field-->
                     <field name="image" widget="image" class="oe_avatar"/>
+<!--                    For highlight the name and refference-->
+                    <div class="oe_title">
+                            <h4>
+                                <field name="ref" readonly="1"/>
+                            </h4>
+                            <h2>
+                                <label for ='name' string ='Name' class = "oe_edit_only"/>
+                                <field name="name"/>
+                            </h2>
+                        </div>
                     <group>
 
                         <group>
-                            <field name="name"/>
+<!--                            <field name="name"/>-->
                             <field name="date_of_birth"/>
                             <field name="age"/>
                             <field name="appointment_counter"/>
-<!--                       <field name="appointment_id"/>-->
+                            <!--                       <field name="appointment_id"/>-->
                         </group>
                         <group>
-                            <field name="ref"/>
-                            <field name="gender_new" invisible="context.get('hide_gender')"/>
+<!--                            <field name="ref"/>-->
+                            <field name="gender_new" invisible="context.get('hide_gender')" widget ="radio"/>
                             <field name="tag_ids" widget='many2many_tags' options="{'color_field':'color_new'}"/>
                             <field name="active" invisible="1"/>
                         </group>
-<!--                        For 90. How To Make Field Readonly Based On Condition-->
-                        <group string ="Other Information" name ="other_info">
-<!--                            <field name = "parent" attrs = "{'invisible':[('age', '>=', 18)]}"/>-->
-                            <field name = "marital_status" attrs = "{'invisible':[('age', '&lt;=', 18)]}"/>
-                            <field name = "partner_name" attrs = "{'readonly':[('marital_status', '!=', 'married')]}"/>
+                        <!--                        For 90. How To Make Field Readonly Based On Condition-->
+                        <group string="Other Information" name="other_info">
+                            <field name="parent" attrs="{'invisible':[('age', '&gt;=', 18)]}"/>
+                            <field name="marital_status" attrs="{'invisible':[('age', '&lt;=', 18)]}"/>
+                            <field name="partner_name"
+                                   attrs="{'readonly': [('marital_status', '!=', 'married')],
+                                                'required': [('marital_status', '=', 'married')],}"/>
                         </group>
                     </group>
                     <notebook>
@@ -87,11 +99,11 @@
 
                                 </tree>
 
-                                <form >
+                                <form>
                                     <group>
                                         <group>
                                             <field name="patient_id"/>
-                                            <field name="gender" />
+                                            <field name="gender"/>
                                             <field name="ref"/>
                                             <field name="doctor_id" widget="many2one_avatar"/>
 

@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 from datetime import date
 from odoo.exceptions import ValidationError
+from dateutil import relativedelta
 
 
 class Hospital_Patient(models.Model):
@@ -22,20 +23,10 @@ class Hospital_Patient(models.Model):
     parent = fields.Char(string="Parent")
 
 
-    @api.depends('appointment_ids')
-    def _compute_appointment_count(self):
-        for i in self:
-            i.appointment_counter = self.env['hospital.appointment'].search_count([('patient_id', '=', i.id)])
 
 
-    @api.constrains('date_of_birth')
-    def  _check_date_of_birth(self):
-        for i in self:
-            if i.date_of_birth and i.date_of_birth > fields.Date.today():
-                raise ValidationError(_("The Entered date of birth is not acceptable"))
-
-
-    age = fields.Integer(string='age', compute='compute_age', tracking=True, store=True)
+    age = fields.Integer(string='age', compute='compute_age',inverse = "_inverse_compute_age",
+                         search="_search_age", tracking=True, store=True)
     kids = fields.Integer(string='kids', compute="kids_func")
     gender_new = fields.Selection([('male', 'Male'), ('female', 'Female')], string="Gender New", tracking=True,
                                   default='female')
@@ -60,6 +51,25 @@ class Hospital_Patient(models.Model):
 
 
 
+    @api.depends('appointment_ids')
+    def _compute_appointment_count(self):
+        for i in self:
+            i.appointment_counter = self.env['hospital.appointment'].search_count([('patient_id', '=', i.id)])
+
+    # for Birthday date validation
+    @api.constrains('date_of_birth')
+    def  _check_date_of_birth(self):
+        for i in self:
+            if i.date_of_birth and i.date_of_birth > fields.Date.today():
+                raise ValidationError(_("The Entered date of birth is not acceptable"))
+
+
+    # patient ar record ar under a jdi kono appointment thky thky oi patient record ta delete kora jby nh
+    @api.ondelete(at_uninstall=False)
+    def _check_appointments(self):
+        for rec in self:
+            if rec.appointment_ids:
+                raise ValidationError(_("Can't delete a patient with appointments"))
 
 
     # inherit create method
@@ -77,7 +87,7 @@ class Hospital_Patient(models.Model):
         return super(Hospital_Patient, self).write(vals)
 
 
-    # form calculate the age from date of Birth and
+    # form calculate the age from date of Birth
     @api.depends('date_of_birth')
     def compute_age(self):
         for reco in self:
@@ -87,3 +97,23 @@ class Hospital_Patient(models.Model):
                 reco.age = today.year - reco.date_of_birth.year
             else:
                 reco.age = 0
+
+    @api.depends("age")
+    def _inverse_compute_age(self):
+        today = date.today()
+        for reco in self:
+            reco.date_of_birth = today - relativedelta.relativedelta(years=reco.age)
+
+
+    #For doing the compute field into searchable
+    def _search_age(self,operator, value):
+        date_of_birth = date.today() - relativedelta.relativedelta(years=value)
+        print("****************Today**********", date.today())
+        print("****************date of birth**********", date_of_birth)
+        return [('date_of_birth', '=', date_of_birth)]
+
+
+
+    def action_test(self):
+        print("Clicked.. yoooo")
+        return

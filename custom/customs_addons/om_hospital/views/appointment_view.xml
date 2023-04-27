@@ -24,7 +24,6 @@
     </record>
     <!--                    For tree view-->
 
-
     <record id="view_hospital_appointment_tree" model="ir.ui.view">
         <field name="name">hospital.appointment.tree</field>
         <field name="model">hospital.appointment</field>
@@ -37,6 +36,11 @@
                   sample='1'
                   multi_edit="1"
             >
+                <header>
+                    <button name='action_in_consultation' string='In Consultation' type='object'
+                    />
+                </header>
+
                 <field name="patient_id"/>
                 <!--                 For appointment time and booking time-->
                 <field name="appointment_time"/>
@@ -50,15 +54,24 @@
 
 
                 <!--                &lt;!&ndash; Another colum named state and decorate this colum using decoration-success,decoration-danger, decoration-muted,  decoration-info&ndash;&gt;-->
-                <!--                decoration-success- green -->
-                <!--                decoration-danger = red  -->
-                <!--                decoration-warning= orange -->
-                <!--                decoration-info= no color -->
+<!--                                decoration-success- green, decoration-danger = red ,decoration-warning= orange ,decoration-info= no color -->
                 <field name='state' decoration-success="state == 'done'"
                        decoration-danger="state == 'cancle'"
                        decoration-warning="state == 'in_consultation'"
                        decoration-info="state == 'draft'"
                        widget='badge'/>
+                <button name='action_done' type='object' class ="fa fa-check btn-success"
+                        attrs="{'invisible':[('state','!=','in_consultation')]}"/>
+                <button name='%(om_hospital.action_cancel_appointment)d'
+                            context="{'default_reason':'komu nah', 'hide_appointment':1}"
+                            attrs="{'invisible':[('state','not in',('draft','in_consultation'))]}"
+                            type='action' class ="fa fa-times btn-danger"/>
+<!--                To add a button inside Group By Tree View-->
+                <groupby name="patient_id">
+                        <button name="action_test" string="Click Me" type="object" class="oe_highlights"/>
+                        <button name="Edit" string="edit" type="edit" />
+                </groupby>
+
             </tree>
         </field>
     </record>
@@ -78,20 +91,19 @@
                             class="oe_highlight" data-hotkey='i'/>
 
                     <!-- states added in done because mark as done button will show when record is in 'in_consultations' state-->
-                    <button name='action_done' string='Mark as Done' type='object' states='in_consultation,cancle'
-                            class="oe_highlight" data-hotkey='v'/>
+                    <button name='action_done' string='Mark as Done' type='object'
+                            states='in_consultation,cancle' class="oe_highlight" data-hotkey='v'/>
                     <!--context = "{'default_appointment_id':active_id}"-->
                     <button name='%(om_hospital.action_cancel_appointment)d' string='Cancel' type='action'
-                            context = "{'default_reason':'komu nah', 'hide_appointment':1}"
-                            states="draft,in_consultation" data-hotkey='z'/>
-<!--                    <button name='action_cancel' string='Cancel' type='object' states="draft,in_consultation"-->
-<!--                            data-hotkey='z'/>-->
+                            context="{'default_reason':'komu nah', 'hide_appointment':1}" states="draft,in_consultation"
+                            data-hotkey='z'/>
+                    <!--                    <button name='action_cancel' string='Cancel' type='object' states="draft,in_consultation"-->
+                    <!--                            data-hotkey='z'/>-->
                     <button name='action_draft' string='Reset to Draft' type='object' states="cancle" data-hotkey='r'/>
 
 
                     <!--  options="{'clickable':'1'}"-->
-                    <field name="state" widget="statusbar" nolabel="1"
-                           statusbar_visible="draft,in_consultation,done"/>
+                    <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,in_consultation,done"/>
                 </header>
                 <!--End of status bar-->
                 <sheet>

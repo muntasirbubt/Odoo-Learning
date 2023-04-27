@@ -10,7 +10,7 @@
                 <group>
                     <group>
 <!--                        invisible = "context.get('hide_appointment')" For hide based on feild-->
-                        <field name="appointment_id"  />
+<!--                        <field name="appointment_id"  />-->
                         <field name="reason"/>
                     </group>
                     <group>

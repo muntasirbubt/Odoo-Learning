@@ -1,14 +1,15 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
+
 class HospitalAppointment(models.Model):
     _name = "hospital.appointment"
     # chatter form view te add korar jonno inherit kora proyojon hoyese
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Hospital Appointment"
     _rec_name = 'patient_id'
-   # ondelete restrict dily record ta delete kora jby nh
-    #ondelete casecade
+    # ondelete restrict dily record ta delete kora jby nh
+    # ondelete casecade
     patient_id = fields.Many2one('hospital.patient', string='Patient', ondelete='cascade')
 
     # For a related field use related='patient_id.gender_new'and for change the value use readonly = False
@@ -26,7 +27,7 @@ class HospitalAppointment(models.Model):
     doctor_id = fields.Many2one('res.users', string='Doctor')
     active = fields.Boolean(string="Active", default=True)
 
-    # For one2many write like 'ids' then fields.One2many(which model you need to show, "a many2one relation from this model", string)
+    #For one2many write like 'ids' then fields.One2many(which model you need to show, "a many2one relation from this model", string)
     pharmacy_line_ids = fields.One2many('appointment.pharmacy.lines', 'appointment_id', string="Pharmacy Lines")
 
     # For Hide One2many Column Based On Parent Record
@@ -61,12 +62,12 @@ class HospitalAppointment(models.Model):
 
     # For removing the delete option in done state record
     def unlink(self):
-        print("TEST Unlike")
-        if self.state != 'draft':
-            raise ValidationError(_("You can delete the record which is only in draft state"))
+        for rec in self:
+            print("TEST Unlike")
+            if self.state != 'draft':
+                raise ValidationError(_("You can delete the record which is only in draft state"))
 
         return super(HospitalAppointment, self).unlink()
-        
 
     # For override the Write method
     def write(self, vals):
@@ -79,7 +80,6 @@ class HospitalAppointment(models.Model):
         for rec in self:
             if rec.state == 'draft':
                 rec.state = 'in_consultation'
-                print('Done')
 
     def action_done(self):
         for r in self:
@@ -104,3 +104,6 @@ class HospitalAppointment(models.Model):
                 'type': 'rainbow_man',
             }
         }
+
+
+
