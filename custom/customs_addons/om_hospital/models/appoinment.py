@@ -34,7 +34,7 @@ class HospitalAppointment(models.Model):
     hide_sales_price = fields.Boolean(string='Hide Sales Price')
 
     # for every change in patient id this onchange_patient_id function will call every time
-    @api.onchange('patient_id')
+    @api.onchange('patient_id',)
     def onchange_patient_id(self):
         self.ref = self.patient_id.ref
 
@@ -55,18 +55,16 @@ class HospitalAppointment(models.Model):
         ('cancle', 'Cancelled')], default='draft', string="Status", required=True)
 
     @api.model
-    def create(self, vals):
-        # add reference value in function by ref
-        vals['ref'] = self.env['ir.sequence'].next_by_code('hospital.appointment')
-        return super(HospitalAppointment, self).create(vals)
+    # def create(self, vals):
+    #     # add reference value in function by ref
+    #     vals['ref'] = self.env['ir.sequence'].next_by_code('hospital.appointment')
+    #     return super(HospitalAppointment, self).create(vals)
 
     # For removing the delete option in done state record
     def unlink(self):
-        for rec in self:
-            print("TEST Unlike")
-            if self.state != 'draft':
-                raise ValidationError(_("You can delete the record which is only in draft state"))
-
+        print("TEST Unlike")
+        if self.state != 'draft':
+            raise ValidationError(_("You can delete the record which is only in draft state"))
         return super(HospitalAppointment, self).unlink()
 
     # For override the Write method

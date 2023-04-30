@@ -115,9 +115,10 @@
                     </div>
                     <group>
                         <group>
-                            <field name="patient_id"/>
+<!--                       add widget ="selection". Now we cannot create manually new patient from appointment view ,we need to select the patient name from existing patient-->
+                            <field name="patient_id" widget="selection"/>
                             <field name="gender"/>
-                            <field name="ref"/>
+                            <field name="ref" readonly ='1' force_save="1"/>
                             <field name='doctor_id' widget='many2one_avatar'/>
 
                         </group>

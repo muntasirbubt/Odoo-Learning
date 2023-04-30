@@ -26,7 +26,7 @@ class Hospital_Patient(models.Model):
 
 
     age = fields.Integer(string='age', compute='compute_age',inverse = "_inverse_compute_age",
-                         search="_search_age", tracking=True, store=True)
+                         search="_search_age", tracking=True)
     kids = fields.Integer(string='kids', compute="kids_func")
     gender_new = fields.Selection([('male', 'Male'), ('female', 'Female')], string="Gender New", tracking=True,
                                   default='female')
@@ -107,10 +107,15 @@ class Hospital_Patient(models.Model):
 
     #For doing the compute field into searchable
     def _search_age(self,operator, value):
+        print("Entered in Search Age")
         date_of_birth = date.today() - relativedelta.relativedelta(years=value)
-        print("****************Today**********", date.today())
-        print("****************date of birth**********", date_of_birth)
-        return [('date_of_birth', '=', date_of_birth)]
+        print("date of Birth",date_of_birth)
+        start_of_year = date_of_birth.replace(day=1,month=1)
+        end_of_year = date_of_birth.replace(day=31,month=12)
+        print("start..........", start_of_year)
+        print("End..........", end_of_year)
+        return [('date_of_birth', '>=', start_of_year), ('date_of_birth', '<=', end_of_year)]
+
 
 
 
