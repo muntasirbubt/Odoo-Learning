@@ -25,6 +25,7 @@
         'views/male_patient_view.xml',
         'views/kids_patient_view.xml',
         'views/appointment_view.xml',
+        'views/operation_view.xml',
         'views/patient_tag_view.xml',
         'views/odoo_playground_view.xml',
         'views/res_config_settings_views.xml',

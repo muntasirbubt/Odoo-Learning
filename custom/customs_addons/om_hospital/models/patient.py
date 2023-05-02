@@ -1,3 +1,4 @@
+import os
 from odoo import api, fields, models, _
 from datetime import date
 from odoo.exceptions import ValidationError
@@ -9,6 +10,7 @@ class Hospital_Patient(models.Model):
     # chatter add korar jonno inherit kora proyojon hoyese
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Hospital Patient"
+    # _rec_name = 'ref'
 
     # add tracking = true for tracking like when anyone change name in log we will see which things changed
     name = fields.Char(string='Name', tracking=True)
@@ -21,8 +23,14 @@ class Hospital_Patient(models.Model):
     marital_status = fields.Selection([('single','Single'), ('married','Married')], string="Maritial Status")
     partner_name = fields.Char(string="Partner Name")
     parent = fields.Char(string="Parent")
+    # appointment_count = fields.Integer(compute='_ap_count')
 
-
+    # @api.depends('name')
+    # def _ap_count(self):
+    #     for rec in self:
+    #         print('Working.......*******')
+    #         ap_count = rec.env['hospital.appointment'].search_count([('patient_id', '=', rec.id)])
+    #         rec.appointment_count = ap_count
 
 
     age = fields.Integer(string='age', compute='compute_age',inverse = "_inverse_compute_age",
@@ -41,7 +49,7 @@ class Hospital_Patient(models.Model):
     # For Many2Many
     tag_ids = fields.Many2many('patient.tag', string='Tags')
 
-    appointment_count = fields.Integer(string= "Appointment Count")
+    # appointment_count = fields.Integer(string= "Appointment Count")
 
     # for statusbar option in patient record  page
     state = fields.Selection([('draft', 'Draft'),
@@ -117,7 +125,7 @@ class Hospital_Patient(models.Model):
         return [('date_of_birth', '>=', start_of_year), ('date_of_birth', '<=', end_of_year)]
 
 
-
+    help(os.unlink)
 
     def action_test(self):
         print("Clicked.. yoooo")

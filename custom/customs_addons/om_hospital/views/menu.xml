@@ -22,5 +22,10 @@
               action ="action_cancel_appointment"
               parent = "menu_appointment_root"
               sequence="20"/>
+    <menuitem id="menu_cancel_appointment"
+              name = 'Cancellation'
+              action ="action_cancel_appointment"
+              parent = "menu_appointment_root"
+              sequence="20"/>
 
 </odoo>

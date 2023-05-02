@@ -14,8 +14,9 @@
                 <!--                <field name="image" widget="image" class="oe_avatar"/>-->
                 <field name="name" string="Patient Name"/>
                 <field name="ref" optional="hide"/>
-                <field name="age"/>
+                <field name="age" avg="Average Age"/>
                 <field name="gender_new"/>
+                <field name="appointment_counter" sum ='Total Appointment'/>
                 <field name="tag_ids" widget='many2many_tags' options="{'color_field':'color_new'}"/>
 
             </tree>

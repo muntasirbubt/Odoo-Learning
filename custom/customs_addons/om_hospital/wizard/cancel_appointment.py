@@ -1,6 +1,8 @@
 import datetime
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from datetime import date
+from dateutil import relativedelta
 
 
 class CancelAppointmentWizard(models.TransientModel):
@@ -10,7 +12,7 @@ class CancelAppointmentWizard(models.TransientModel):
     # Ovverride the default_get function
     @api.model
     def default_get(self, fields):
-        print("Default get executed")
+        # print("Default get executed")
         res = super(CancelAppointmentWizard, self).default_get(fields)
         res['date_cancel'] = datetime.date.today()
         # if self.env.context.get('active_id'):
@@ -23,9 +25,13 @@ class CancelAppointmentWizard(models.TransientModel):
     date_cancel = fields.Date(string='Cancellation Date')
 
     def action_cancel(self):
-        print("In Action Cancel")
-        if self.appointment_id.booking_date == fields.date.today():
-            print("In if statement")
-            raise ValidationError(_("For Testing"))
-        self.appointment_id.state = "cancle"
-        return
+        # Access conf. Value From Settings Inside the code
+        cancel_day = self.env['ir.config_parameter'].get_param('om_hospital.cancel_day')
+        print("cancle day", cancel_day)
+        # print(self.appointment_id.booking_date)
+        allowed_date = self.appointment_id.booking_date - relativedelta.relativedelta(days= int(cancel_day))
+        print('allowed_date',allowed_date)
+        if allowed_date < date.today():
+            raise ValidationError(_("Sorry Cancellation is not allowed for this booking"))
+        # self.appointment_id.state = "cancle"
+        # return
