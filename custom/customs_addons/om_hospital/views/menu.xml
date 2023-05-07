@@ -2,30 +2,41 @@
 <odoo>
 
     <menuitem id="menu_hospital_root"
-              name =  "Hospital"
+              name="Hospital"
               web_icon="om_hospital,static/description/icon.png"
               sequence="0"/>
     <menuitem id="menu_patient_root"
-              name = 'Patient Details'
-              parent = "menu_hospital_root"
+              name='Patient Details'
+              parent="menu_hospital_root"
               sequence="0"/>
     <menuitem id="menu_appointment_root"
-              name = 'Appointments'
-              parent = "menu_hospital_root"
+              name='Appointments'
+              parent="menu_hospital_root"
               sequence="0"/>
     <menuitem id="menu_configuration"
-              name = 'Configurations'
-              parent = "menu_hospital_root"
+              name='Configurations'
+              parent="menu_hospital_root"
               sequence="100"/>
     <menuitem id="menu_cancel_appointment"
-              name = 'Cancellation'
-              action ="action_cancel_appointment"
-              parent = "menu_appointment_root"
+              name='Cancellation'
+              action="action_cancel_appointment"
+              parent="menu_appointment_root"
               sequence="20"/>
-    <menuitem id="menu_cancel_appointment"
-              name = 'Cancellation'
-              action ="action_cancel_appointment"
-              parent = "menu_appointment_root"
-              sequence="20"/>
+
+    <menuitem id="menu_technical"
+              name="Technical"
+              parent="menu_hospital_root"
+              sequence="111"/>
+
+
+    <!--    <menuitem id="menu_cancel_appointment"-->
+    <!--              name = 'Cancellation'-->
+    <!--              action ="action_cancel_appointment"-->
+    <!--              parent = "menu_appointment_root"-->
+    <!--              sequence="20"/>-->
+    <!--    <menuitem id="menu_playground"-->
+    <!--              name = 'Play G'-->
+    <!--              parent = "menu_hospital_root"-->
+    <!--              sequence="0"/>-->
 
 </odoo>

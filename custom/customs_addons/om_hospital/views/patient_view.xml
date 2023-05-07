@@ -16,7 +16,7 @@
                 <field name="ref" optional="hide"/>
                 <field name="age" avg="Average Age"/>
                 <field name="gender_new"/>
-                <field name="appointment_counter" sum ='Total Appointment'/>
+                <field name="appointment_counter" sum='Total Appointment'/>
                 <field name="tag_ids" widget='many2many_tags' options="{'color_field':'color_new'}"/>
 
             </tree>
@@ -35,41 +35,74 @@
                            statusbar_visible="draft,in_consultation,done"/>
                 </header>
                 <sheet>
+<!--                For Stat/smart button-->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_appointments" icon="fa-star">
+                            <field  name="appointment_counter" string="Total Appointment" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <!--               This div for Birthday message alert-->
+                    <div class="alert alert-danger text-center o_form_header" role="alert"
+                         attrs="{'invisible':[('is_birthday','=',False)]}">
+                        <a href="#" class="close" data-dismiss="alert">×</a>
+                        <div>
+                            <strong>
+                                Today is Birthday!!
+                            </strong>
+                        </div>
+                        <div>
+                            Wish
+                            <field name="name" readonly="1"/>
+                        </div>
+                    </div>
+
+
                     <!--                            For image field-->
                     <field name="image" widget="image" class="oe_avatar"/>
-<!--                    For highlight the name and refference-->
+                    <!--                    For highlight the name and refference-->
                     <div class="oe_title">
-                            <h4>
-                                <field name="ref"/>
-                            </h4>
-                            <h2>
-                                <label for ='name' string ='Name' class = "oe_edit_only"/>
-                                <field name="name"/>
-                            </h2>
-                        </div>
+                        <h4>
+                            <field name="ref"/>
+                        </h4>
+                        <h2>
+                            <label for='name' string='Name' class="oe_edit_only"/>
+                            <field name="name"/>
+                        </h2>
+                    </div>
                     <group>
-
                         <group>
-<!--                            <field name="name"/>-->
+                            <!--                            <field name="name"/>-->
                             <field name="date_of_birth"/>
                             <field name="age"/>
                             <field name="appointment_counter"/>
+                            <field name="is_birthday" invisible="1"/>
+
                             <!--                       <field name="appointment_id"/>-->
                         </group>
                         <group>
-<!--                            <field name="ref"/>-->
-                            <field name="gender_new" invisible="context.get('hide_gender')" widget ="radio"/>
+                            <!--                            <field name="ref"/>-->
+                            <field name="gender_new" invisible="context.get('hide_gender')" widget="radio"/>
                             <field name="tag_ids" widget='many2many_checkboxes' options="{'color_field':'color_new'}"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <!--                        For 90. How To Make Field Readonly Based On Condition-->
-                        <group string="Other Information" name="other_info">
+                    </group>
+                    <group string="Other Information" name="other_info">
+                        <group>
+
                             <field name="parent" attrs="{'invisible':[('age', '&gt;=', 18)]}"/>
                             <field name="marital_status" attrs="{'invisible':[('age', '&lt;=', 18)]}"/>
                             <field name="partner_name"
                                    attrs="{'readonly': [('marital_status', '!=', 'married')],
                                                 'required': [('marital_status', '=', 'married')],}"/>
                         </group>
+                        <group>
+                            <field name="phone" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="website" widget="url"/>
+                        </group>
+
                     </group>
                     <notebook>
                         <page string='Appointments' name='appointment'>

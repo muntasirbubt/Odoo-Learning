@@ -1,28 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-
-    <!--    For Appointment activity view-->
-
-    <record id="view_hospital_appointment_activity" model="ir.ui.view">
-        <field name="name">hospital.appointment.activity</field>
-        <field name="model">hospital.appointment</field>
-        <field name="arch" type="xml">
-            <activity string="Appointment">
-                <field name="patient_id"/>
-                <templates>
-                    <div t-name="activity-box">
-                        <img t-att-src="activity_image('hospital.patient', 'image', record.patient_id.raw_value)"
-                             t-att-title="record.patient_id.value" t-att-alt="record.patient_id.value"/>
-                        <div>
-                            <field name="ref" display="full"/>
-                        </div>
-                    </div>
-                </templates>
-            </activity>
+    <!--    For server action in odoo-->
+    <record id="action_mark_as_done" model="ir.actions.server">
+        <field name="name">Mark as Done</field>
+        <field name='type'>ir.actions.server</field>
+        <!--        Formet: model id ar reff hby model_modelName-->
+        <field name="model_id" ref="model_hospital_appointment"/>
+        <field name="binding_model_id" ref="model_hospital_appointment"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            for reco in records:
+                if reco.state == 'in_consultation':
+                    reco.action_done()
         </field>
     </record>
+
+
     <!--                    For tree view-->
+
+    <!--    For Calendar View-->
+    <record id="view_hospital_appointment_calendar1" model="ir.ui.view">
+        <field name="name">hospital.appointment.calendar</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <calendar string="Appointments" date_start="booking_date" date_delay="duration"  color='state'
+                      quick_add="False" hide_time="True"  event_limit="5" event_open_popup = "True"
+                      form_view_id="%(om_hospital.view_hospital_appointment_form)d">
+                <field name="patient_id" filters='1'/>
+                <field name="state" invisible="1" filters='1' avatar_field='image'/>
+            </calendar>
+        </field>
+    </record>
+
+
+    <!--    <record id="view_hospital_appointment_calendar" model="ir.ui.view">-->
+    <!--        <field name="name">hospital.appointment.calendar</field>-->
+    <!--        <field name="model">hospital.appointment</field>-->
+    <!--        <field name="arch" type="xml">-->
+    <!--            <calendar string="Appointments" date_start="booking_date">-->
+    <!--                <field name="patient_id"/>-->
+    <!--            </calendar>-->
+    <!--        </field>-->
+    <!--    </record>-->
+
 
     <record id="view_hospital_appointment_tree" model="ir.ui.view">
         <field name="name">hospital.appointment.tree</field>
@@ -52,7 +74,6 @@
                 <field name="ref" optional="hide"/>
                 <field name='doctor_id' widget='many2one_avatar_user'/>
 
-
                 <!--                &lt;!&ndash; Another colum named state and decorate this colum using decoration-success,decoration-danger, decoration-muted,  decoration-info&ndash;&gt;-->
                 <!--                                decoration-success- green, decoration-danger = red ,decoration-warning= orange ,decoration-info= no color -->
                 <field name='state' decoration-success="state == 'done'"
@@ -71,6 +92,7 @@
                     <button name="action_test" string="Click Me" type="object" class="oe_highlights"/>
                     <button name="Edit" string="edit" type="edit"/>
                 </groupby>
+                <field name="progress" widget="progressbar"/>
 
             </tree>
         </field>
@@ -119,8 +141,8 @@
                     </div>
                     <group>
                         <group>
-                            <!--                       add widget ="selection". Now we cannot create manually new patient from appointment view ,we need to select the patient name from existing patient-->
-                            <field name="patient_id"/>
+                            <!--  add widget ="selection". Now we cannot create manually new patient from appointment view ,we need to select the patient name from existing patient-->
+                            <field name="patient_id" widget="selection"/>
                             <field name="gender"/>
                             <field name="ref"/>
                             <field name='doctor_id' widget='many2one_avatar'/>
@@ -132,6 +154,8 @@
                             <field name="hide_sales_price" groups="base.group_no_one"/>
                             <field name="appointment_time"/>
                             <field name="booking_date" default_focus='1'/>
+                            <field name="duration"/>
+
                             <!--                                Add 'groups' for show this button only in debug mode-->
                             <button name="action_test" string='Object Button'
                                     confirm='Are you ready for action button Action?'
@@ -148,6 +172,12 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="Progress" name="progress">
+                            <!--                       For percentpie-->
+                            <!--                            <field name="progress" widget="percentpie"/>-->
+                            <!--                       For widget gauge-->
+                            <field name="progress" widget="gauge" options="{'style': 'width:200px; height: 150px;'}"/>
+                        </page>
                         <page string='Prescription' name='prescription'>
                             <!--                        For html feild-->
                             <!--                        In the html feild we add options for collaborative and for resizable -->
@@ -231,8 +261,8 @@
         <field name="name">Appointments</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">hospital.appointment</field>
-        <field name="view_mode">tree,form,activity</field>
-
+        <field name="view_mode">tree,form,calendar,activity</field>
+        <field name="view_id" ref="view_hospital_appointment_calendar1"/>
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

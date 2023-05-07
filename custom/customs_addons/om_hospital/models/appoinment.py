@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+import random
 
 
 class HospitalAppointment(models.Model):
@@ -10,25 +11,18 @@ class HospitalAppointment(models.Model):
     _rec_name = 'patient_id'
     _order = 'id desc'
 
-
-
-
-
-
-
-
-
     # ondelete restrict dily record ta delete kora jby nh
     # ondelete casecade
     patient_id = fields.Many2one('hospital.patient', string='Patient', ondelete='cascade')
-    sequence = fields.Char(string= "Sequence")
+    sequence = fields.Char(string="Sequence")
     # For a related field use related='patient_id.gender_new'and for change the value use readonly = False
     gender = fields.Selection(related='patient_id.gender_new', readonly=False)
 
     # for appointment time and booking time
     # add default for set these 2 variables default when creating a new form
     appointment_time = fields.Datetime(string="appointment time", default=fields.Datetime.now)
-    booking_date = fields.Date(string="Booking Date", default=fields.Date.context_today, help="Insert the booking date")
+    booking_date = fields.Date(string="Booking Date", default=fields.Date.context_today)
+    duration = fields.Float(string="Duration")
 
     # For define HTML feild
     prescription = fields.Html(string="Prescription")
@@ -37,21 +31,35 @@ class HospitalAppointment(models.Model):
     doctor_id = fields.Many2one('res.users', string='Doctor')
     active = fields.Boolean(string="Active", default=True)
 
-    #For one2many write like 'ids' then fields.One2many(which model you need to show, "a many2one relation from this model", string)
+    # For one2many write like 'ids' then fields.One2many(which model you need to show, "a many2one relation from this model", string)
     pharmacy_line_ids = fields.One2many('appointment.pharmacy.lines', 'appointment_id', string="Pharmacy Lines")
 
     # For Hide One2many Column Based On Parent Record
     hide_sales_price = fields.Boolean(string='Hide Sales Price')
 
     operation_id = fields.Many2one('hospital.operation', string="Operations")
+    # for progress widget
+    progress = fields.Integer(string="Progress", compute="_compute_progress")
 
+    @api.depends('state')
+    def _compute_progress(self):
+        for rec in self:
 
+            if rec.state == 'draft':
+                progress = random.randrange(0, 25)
+            elif rec.state == 'in_consultation':
+                progress = random.randrange(25, 99)
+            elif rec.state == 'done':
+                progress = 100
+            else:
+                progress = 0
+            rec.progress = progress
 
     # for every change in patient id this onchange_patient_id function will call every time
-    @api.onchange('patient_id',)
+    # sayeda nafia sultana
+    @api.onchange('patient_id', )
     def onchange_patient_id(self):
         self.ref = self.patient_id.ref
-
 
     # For Priority
     priority = fields.Selection([
@@ -82,7 +90,6 @@ class HospitalAppointment(models.Model):
             if rec.state != 'draft':
                 raise ValidationError(_("You can delete the record which is only in draft state"))
         return super(HospitalAppointment, self).unlink()
-        # return super(HospitalAppointment, self).unlink()
 
     # For override the Write method
     def write(self, vals):
@@ -119,6 +126,3 @@ class HospitalAppointment(models.Model):
                 'type': 'rainbow_man',
             }
         }
-
-
-

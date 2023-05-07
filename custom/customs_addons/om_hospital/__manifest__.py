@@ -12,7 +12,7 @@
     'summary': 'Hospital Management System',
     'description': """ Hospital Management System of a hospital""",
     # add mail in depends for chatter
-    'depends': ['mail', 'product'],
+    'depends': ['mail', 'product','calendar'],
     'data': [
         'security/ir.model.access.csv',
         'data/patient_tag_data.xml',
