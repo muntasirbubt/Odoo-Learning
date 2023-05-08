@@ -66,6 +66,7 @@ class Hospital_Patient(models.Model):
     #
     #     self.appointment_counter = 10
 
+    # phone_num = fields.Integer(string="Phone Number")
     age = fields.Integer(string='age', compute='compute_age', inverse="_inverse_compute_age",
                          search="_search_age", tracking=True)
     kids = fields.Integer(string='kids', compute="kids_func")

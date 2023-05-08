@@ -5,6 +5,7 @@ import random
 
 class HospitalAppointment(models.Model):
     _name = "hospital.appointment"
+
     # chatter form view te add korar jonno inherit kora proyojon hoyese
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Hospital Appointment"
@@ -13,22 +14,27 @@ class HospitalAppointment(models.Model):
 
     # ondelete restrict dily record ta delete kora jby nh
     # ondelete casecade
-    patient_id = fields.Many2one('hospital.patient', string='Patient', ondelete='cascade')
-    sequence = fields.Char(string="Sequence")
+    patient_id = fields.Many2one('hospital.patient', string='Patient', ondelete='cascade', tracking=1)
+    sequence = fields.Char(string="Sequence", tracking=True)
+
     # For a related field use related='patient_id.gender_new'and for change the value use readonly = False
-    gender = fields.Selection(related='patient_id.gender_new', readonly=False)
+    gender = fields.Selection(related='patient_id.gender_new', readonly=False, tracking=True)
 
     # for appointment time and booking time
     # add default for set these 2 variables default when creating a new form
     appointment_time = fields.Datetime(string="appointment time", default=fields.Datetime.now)
     booking_date = fields.Date(string="Booking Date", default=fields.Date.context_today)
-    duration = fields.Float(string="Duration")
+    duration = fields.Float(string="Duration", tracking=6)
+
+    # For currency (Monetary fields)
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
 
     # For define HTML feild
     prescription = fields.Html(string="Prescription")
-    ref = fields.Char(string="Reference", help='Reference of the patient from the patient record')
+    ref = fields.Char(string="Reference", help='Reference of the patient from the patient record', tracking=True)
 
-    doctor_id = fields.Many2one('res.users', string='Doctor')
+    doctor_id = fields.Many2one('res.users', string='Doctor', tracking=3)
     active = fields.Boolean(string="Active", default=True)
 
     # For one2many write like 'ids' then fields.One2many(which model you need to show, "a many2one relation from this model", string)
@@ -38,8 +44,17 @@ class HospitalAppointment(models.Model):
     hide_sales_price = fields.Boolean(string='Hide Sales Price')
 
     operation_id = fields.Many2one('hospital.operation', string="Operations")
+
     # for progress widget
     progress = fields.Integer(string="Progress", compute="_compute_progress")
+
+    # to = fields.Many2one('appointment.pharmacy.lines',string="Test")
+    # total_amount = fields.Monetary(string="Total", compute="_compute_total_amount",currency_field='currency_id')
+
+    # @api.depends('to')
+    # def _compute_total_amount(self):
+    #     for rec in self:
+    #         rec.total_amount = rec.total_amount + rec.to.price_subtotal
 
     @api.depends('state')
     def _compute_progress(self):
@@ -75,7 +90,7 @@ class HospitalAppointment(models.Model):
         ('draft', 'Draft'),
         ('in_consultation', 'In Consultation'),
         ('done', 'Done'),
-        ('cancle', 'Cancelled')], default='draft', string="Status", required=True)
+        ('cancle', 'Cancelled')], default='draft', string="Status", required=True, tracking=2)
 
     @api.model
     def create(self, vals):
@@ -98,6 +113,18 @@ class HospitalAppointment(models.Model):
             vals['ref'] = self.env['ir.sequence'].next_by_code('hospital.appointment')
         return super(HospitalAppointment, self).write(vals)
 
+    # For Share in whatsapp
+    def action_share_whatsapp(self):
+        if not self.patient_id.phone:
+            raise ValidationError(_("Missing Phone Number in Patient Record"))
+        message ="Hi *%s* your *appointment* number is %s. Thank You" % (self.patient_id.name, self.sequence)
+        whatsapp_api_url = "http://api.whatsapp.com/send?phone=%s&text=%s" % (self.patient_id.phone, message)
+        return{
+            'type':'ir.actions.act_url',
+            'target':'new',
+            'url': whatsapp_api_url
+        }
+
     def action_in_consultation(self):
         for rec in self:
             if rec.state == 'draft':
@@ -117,12 +144,18 @@ class HospitalAppointment(models.Model):
 
     # for adding button in appointment page
     def action_test(self):
-        print("Button Clicked.....")
-        # for rainbow effect
+        # URL Action
         return {
-            'effect': {
-                'fadeout': 'slow',  # for vanishing effect after sometimes automatically
-                'message': 'Clicked Successfully',
-                'type': 'rainbow_man',
-            }
+            'type': 'ir.actions.act_url',
+            'target': 'self',  # For open in same tab('self' for same tab, new for 'new' tab)
+            'url': 'http://www.odoo.com',
         }
+
+        # # for rainbow effect
+        # return {
+        #     'effect': {
+        #         'fadeout': 'slow',  # for vanishing effect after sometimes automatically
+        #         'message': 'Clicked Successfully',
+        #         'type': 'rainbow_man',
+        #     }
+        # }

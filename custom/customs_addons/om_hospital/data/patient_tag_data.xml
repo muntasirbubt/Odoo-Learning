@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id ="patient_tag_vip" model ="patient.tag">
-        <field name ="name">VIP</field>
-    </record>
-
-    <record id ="patient_tag_kid" model ="patient.tag">
-        <field name ="name">Kid</field>
-    </record>
-
-    <record id ="patient_tag_adult" model ="patient.tag">
-        <field name ="name">adult</field>
-    </record>
-
-    <record id ="patient_tag_adult" model ="patient.tag">
-        <field name ="name">Mun</field>
-        <field name ="active" eval ="False"/>
-    </record>
-
-
+    <data noupdate ='1'>
+        <record id="patient_tag_vip" model="patient.tag" forcecreate ='0'>
+            <field name="name">VIPTU</field>
+        </record>
+        <record id="patient_tag_kid" model="patient.tag" forcecreate ='0'>
+            <field name="name">Kid</field>
+        </record>
+        <record id="patient_tag_adult" model="patient.tag" forcecreate ='0'>
+            <field name="name">Adult</field>
+        </record>
+        <record id="patient_tag_adult" model="patient.tag" forcecreate ='0'>
+            <field name="name">Mun</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
 
 </odoo>

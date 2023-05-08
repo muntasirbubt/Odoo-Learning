@@ -76,6 +76,8 @@
                             <field name="date_of_birth"/>
                             <field name="age"/>
                             <field name="appointment_counter"/>
+<!--                            <field name="phone_num"/>-->
+
                             <field name="is_birthday" invisible="1"/>
 
                             <!--                       <field name="appointment_id"/>-->
@@ -165,7 +167,9 @@
                                 </form>
                             </field>
                         </page>
+
                     </notebook>
+
                 </sheet>
                 <!--           For add  Chatter-->
                 <div class="oe_chatter">

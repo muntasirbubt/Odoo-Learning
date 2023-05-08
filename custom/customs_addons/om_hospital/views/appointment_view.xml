@@ -25,8 +25,8 @@
         <field name="name">hospital.appointment.calendar</field>
         <field name="model">hospital.appointment</field>
         <field name="arch" type="xml">
-            <calendar string="Appointments" date_start="booking_date" date_delay="duration"  color='state'
-                      quick_add="False" hide_time="True"  event_limit="5" event_open_popup = "True"
+            <calendar string="Appointments" date_start="booking_date" date_delay="duration" color='state'
+                      quick_add="False" hide_time="True" event_limit="5" event_open_popup="True"
                       form_view_id="%(om_hospital.view_hospital_appointment_form)d">
                 <field name="patient_id" filters='1'/>
                 <field name="state" invisible="1" filters='1' avatar_field='image'/>
@@ -73,6 +73,8 @@
                 <field name="gender" optional="hide"/>
                 <field name="ref" optional="hide"/>
                 <field name='doctor_id' widget='many2one_avatar_user'/>
+<!--                <field name="total_amount"/>-->
+
 
                 <!--                &lt;!&ndash; Another colum named state and decorate this colum using decoration-success,decoration-danger, decoration-muted,  decoration-info&ndash;&gt;-->
                 <!--                                decoration-success- green, decoration-danger = red ,decoration-warning= orange ,decoration-info= no color -->
@@ -115,6 +117,10 @@
                     <!-- states added in done because mark as done button will show when record is in 'in_consultations' state-->
                     <button name='action_done' string='Mark as Done' type='object'
                             states='in_consultation,cancle' class="oe_highlight" data-hotkey='v'/>
+
+                    <button name='action_share_whatsapp' string='Share in Whatsapp'
+                            type='object' class="oe_highlight" data-hotkey='w' icon ='fa-whatsapp' />
+
                     <!--context = "{'default_appointment_id':active_id}"-->
                     <button name='%(om_hospital.action_cancel_appointment)d' string='Cancel' type='action'
                             context="{'default_reason':'komu nah', 'hide_appointment':1}" states="draft,in_consultation"
@@ -147,14 +153,19 @@
                             <field name="ref"/>
                             <field name='doctor_id' widget='many2one_avatar'/>
                             <field name='operation_id'/>
+                            <field name="duration"/>
+
                         </group>
                         <group>
                             <!--                            hide sales field for hide the sales_price-->
                             <!--                                Add 'groups' for show this field only in debug mode-->
                             <field name="hide_sales_price" groups="base.group_no_one"/>
                             <field name="appointment_time"/>
+
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+
                             <field name="booking_date" default_focus='1'/>
-                            <field name="duration"/>
 
                             <!--                                Add 'groups' for show this button only in debug mode-->
                             <button name="action_test" string='Object Button'
@@ -183,6 +194,7 @@
                             <!--                        In the html feild we add options for collaborative and for resizable -->
                             <field name="prescription" placeholder="Enter you prescription"
                                    options="{'collaborative' :true, 'resizable': true, 'codeview':True }"/>
+
                         </page>
                         <page string='Pharmacy' name="pharmacy">
                             <!--         For one2Many feild-->
@@ -193,11 +205,16 @@
                                 <tree editable='bottom'>
                                     <!--             Tree view for pharmacy page of nootebook-->
                                     <field name="product_id"/>
+
                                     <!--             Hide One2many Column Based On Parent Record-->
+                                    <!--  for monetary widget  add widget="monetary" -->
                                     <field name="price_unit"
+                                           widget="monetary" options="{'currency_field':'company_currency_id'}"
                                            attrs="{'column_invisible': [('parent.hide_sales_price', '!=',  False)]}"
                                     />
                                     <field name="qty"/>
+                                    <field name="company_currency_id" invisible='1'/>
+                                    <field name="price_subtotal"/>
                                 </tree>
                                 <!--                Form view for pharmacy page of nootebook-->
                                 <form>
@@ -205,14 +222,17 @@
                                         <field name="product_id"/>
                                         <!--        Hide One2many Column Based On Parent Record-->
                                         <field name="price_unit"
-                                               attrs="{'column_invisible': [('parent.hide_sales_price', '!=',  False)]}"
+                                               attrs="{'column_invisible': [('parent.hide_sales_price', '!=',  True)]}"
                                         />
                                         <field name="qty"/>
                                     </group>
 
                                 </form>
                             </field>
+<!--                            <field name="total_amount"/>-->
                         </page>
+
+
                     </notebook>
                 </sheet>
                 <!-- For add  Chatter-->
