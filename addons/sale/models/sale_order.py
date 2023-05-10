@@ -10,7 +10,7 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools import float_is_zero, html_keep_url, is_html_empty
 
-from odoo.addons.payment import utils as payment_utils
+# from odoo.addons.payment import utils as payment_utils
 
 class SaleOrder(models.Model):
     _name = "sale.order"

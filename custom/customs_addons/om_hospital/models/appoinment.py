@@ -9,7 +9,7 @@ class HospitalAppointment(models.Model):
     # chatter form view te add korar jonno inherit kora proyojon hoyese
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Hospital Appointment"
-    _rec_name = 'patient_id'
+    _rec_name = 'sequence'
     _order = 'id desc'
 
     # ondelete restrict dily record ta delete kora jby nh
@@ -119,6 +119,8 @@ class HospitalAppointment(models.Model):
             raise ValidationError(_("Missing Phone Number in Patient Record"))
         message ="Hi *%s* your *appointment* number is %s. Thank You" % (self.patient_id.name, self.sequence)
         whatsapp_api_url = "http://api.whatsapp.com/send?phone=%s&text=%s" % (self.patient_id.phone, message)
+
+        self.message_post(body=message, subject ="Whatsapp Message")
         return{
             'type':'ir.actions.act_url',
             'target':'new',
@@ -159,3 +161,20 @@ class HospitalAppointment(models.Model):
         #         'type': 'rainbow_man',
         #     }
         # }
+
+    def action_notification(self):
+        action = self.env.ref('om_hospital.action_hospital_patient')
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Clicked to open the patient record'),
+                'message': '%s',
+                'links': [{
+                    'label': self.patient_id.name,
+                    'url': f'#action={action.id}&id={self.patient_id.id}&model=hospital.patient'
+                }],
+                'sticky': False,
+            },
+
+        }

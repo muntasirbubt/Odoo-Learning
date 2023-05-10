@@ -173,6 +173,12 @@
                                     help="On clicking this object button this will print a messege in python log"
                                     groups="base.group_no_one"
                                     type="object" class="oe_highlight"/>
+
+                            <button name="action_notification" string='Notification Button'
+                                    confirm='Are you ready for action button Action?'
+                                    groups="base.group_no_one"
+                                    type="object" class="oe_highlight"/>
+
                             <!--                                Add 'groups' for show this button only in debug mode-->
                             <button name="%(action_of_action_button)d" string='Action Button'
                                     confirm='Are you ready for action button Action?' type="action"
@@ -209,7 +215,7 @@
                                     <!--             Hide One2many Column Based On Parent Record-->
                                     <!--  for monetary widget  add widget="monetary" -->
                                     <field name="price_unit"
-                                           widget="monetary" options="{'currency_field':'company_currency_id'}"
+                                           widget="monetary" options="{'currency_field':'company_currency_id', 'field_digits':True}"
                                            attrs="{'column_invisible': [('parent.hide_sales_price', '!=',  False)]}"
                                     />
                                     <field name="qty"/>
