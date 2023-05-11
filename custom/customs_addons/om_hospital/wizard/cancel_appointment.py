@@ -27,13 +27,23 @@ class CancelAppointmentWizard(models.TransientModel):
     def action_cancel(self):
         # Access conf. Value From Settings Inside the code
         cancel_day = self.env['ir.config_parameter'].get_param('om_hospital.cancel_day')
-        print("cancle day", cancel_day)
+        # print("cancle day", cancel_day)
         # print(self.appointment_id.booking_date)
         allowed_date = self.appointment_id.booking_date - relativedelta.relativedelta(days=int(cancel_day))
         print('allowed_date', allowed_date)
         if allowed_date < date.today():
             raise ValidationError(_("Sorry Cancellation is not allowed for this booking"))
         self.appointment_id.state = "cancle"
+
+        # How To Execute SQL Queries
+        query = """select id,patient_id from hospital_appointment where id =%s""" %self.appointment_id.id
+        # from the environment we will be getting a database cursor then execute the query
+        # self.env.cr.execute("""select id,name from hospital_patient""") or,
+        self.env.cr.execute(query) # self.cr.execute(query)-> same thing
+        result_query = self.env.cr.fetchall()
+        # fetchall dily touple hishebe print krebe  & dictfetchall  hly dictionary a return krbe & dictfetchone hly 1 record return krbe
+        print('Query Result', result_query)
+
         # For Prevent Closing of wizard
         return {
             'type': 'ir.actions.act_window',

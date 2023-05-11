@@ -170,11 +170,17 @@ class HospitalAppointment(models.Model):
             'params': {
                 'title': _('Clicked to open the patient record'),
                 'message': '%s',
-                'links': [{
-                    'label': self.patient_id.name,
-                    'url': f'#action={action.id}&id={self.patient_id.id}&model=hospital.patient'
-                }],
+                # 'links': [{
+                #     'label': self.patient_id.name,
+                #     'url': f'#action={action.id}&id={self.patient_id.id}&model=hospital.patient'
+                # }],
                 'sticky': False,
+                'next': {
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'hospital.patient',
+                    'res_id': self.patient_id.id,
+                    'views': [(False, 'form')],
+                }
             },
 
         }

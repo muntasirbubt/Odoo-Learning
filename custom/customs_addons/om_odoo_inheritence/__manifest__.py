@@ -20,14 +20,15 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['sale'],
+    'depends': ['sale','mail'],
 
     # always loaded
     'data': [
 
         'views/sale_order_view.xml',
         'views/templates.xml',
-        'views/account_move_inherit.xml'
+        'views/account_move_inherit.xml',
+        'views/partner_category_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

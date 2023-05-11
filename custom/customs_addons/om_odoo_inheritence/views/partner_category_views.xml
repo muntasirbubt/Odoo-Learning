@@ -1,0 +1,23 @@
+<?xml version ="1.0" encoding ="utf-8" ?>
+
+<!--For inherit model and add field to a model-->
+<odoo>
+    <data>
+        <record id="view_order_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.category.inherit</field>
+            <field name="model">res.partner.category</field>
+            <!--            inherit the model where external id is base.view_partner_category_form-->
+            <field name="inherit_id" ref="base.view_partner_category_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet" position="after">
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="message_ids"/>
+                    </div>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+
+</odoo>
