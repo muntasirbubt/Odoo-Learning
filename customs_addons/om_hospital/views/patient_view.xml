@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--For tree view-->
+    <record id="view_hospital_patient_tree" model="ir.ui.view">
+        <field name="name">hospital.patient.tree</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <!--      export_xlsx for remove the option of download the data csv file-->
+            <tree export_xlsx="0"
+                  decoration-success="gender_new =='male'"
+                  decoration-danger="gender_new == 'female'">
+
+
+                <!--                <field name="image" widget="image" class="oe_avatar"/>-->
+                <field name="name" string="Patient Name"/>
+                <field name="ref" optional="hide"/>
+                <field name="age" avg="Average Age"/>
+                <field name="gender_new"/>
+                <field name="appointment_counter" sum='Total Appointment'/>
+                <field name="tag_ids" widget='many2many_tags' options="{'color_field':'color_new'}"/>
+
+            </tree>
+        </field>
+    </record>
+    <!--End of tree view-->
+
+    <!--For form view-->
+    <record id="view_hospital_patient_form" model="ir.ui.view">
+        <field name="name">hospital.patient.form</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name='state' widget='statusbar' nolebel="1" option="{clickable = '1'}"
+                           statusbar_visible="draft,in_consultation,done"/>
+                </header>
+                <sheet>
+<!--                For Stat/smart button-->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_appointments" icon="fa-star">
+                            <field  name="appointment_counter" string="Total Appointment" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <!--               This div for Birthday message alert-->
+                    <div class="alert alert-danger text-center o_form_header" role="alert"
+                         attrs="{'invisible':[('is_birthday','=',False)]}">
+                        <a href="#" class="close" data-dismiss="alert">×</a>
+                        <div>
+                            <strong>
+                                Today is Birthday!!
+                            </strong>
+                        </div>
+                        <div>
+                            Wish
+                            <field name="name" readonly="1"/>
+                        </div>
+                    </div>
+
+
+                    <!--                            For image field-->
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <!--                    For highlight the name and refference-->
+                    <div class="oe_title">
+                        <h4>
+                            <field name="ref"/>
+                        </h4>
+                        <h2>
+                            <label for='name' string='Name' class="oe_edit_only"/>
+                            <field name="name"/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group>
+                            <!--                            <field name="name"/>-->
+                            <field name="date_of_birth"/>
+                            <field name="age"/>
+                            <field name="appointment_counter"/>
+<!--                            <field name="phone_num"/>-->
+
+                            <field name="is_birthday" invisible="1"/>
+
+                            <!--                       <field name="appointment_id"/>-->
+                        </group>
+                        <group>
+                            <!--                            <field name="ref"/>-->
+                            <field name="gender_new" invisible="context.get('hide_gender')" widget="radio"/>
+                            <field name="tag_ids" widget='many2many_checkboxes' options="{'color_field':'color_new'}"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <!--                        For 90. How To Make Field Readonly Based On Condition-->
+                    </group>
+                    <group string="Other Information" name="other_info">
+                        <group>
+
+                            <field name="parent" attrs="{'invisible':[('age', '&gt;=', 18)]}"/>
+                            <field name="marital_status" attrs="{'invisible':[('age', '&lt;=', 18)]}"/>
+                            <field name="partner_name"
+                                   attrs="{'readonly': [('marital_status', '!=', 'married')],
+                                                'required': [('marital_status', '=', 'married')],}"/>
+                        </group>
+                        <group>
+                            <field name="phone" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="website" widget="url"/>
+                        </group>
+
+                    </group>
+                    <notebook>
+                        <page string='Appointments' name='appointment'>
+
+                            <field name="appointment_ids" readonly='1'>
+                                <tree create='0' delete='0' edit="'0">
+                                    <field name="patient_id"/>
+                                    <!--                 For appointment time and booking time-->
+                                    <field name="appointment_time"/>
+                                    <!--                insert 'optional' keyword for Dynamic tree view-->
+                                    <field name="booking_date" optional="show"/>
+                                    <field name="activity_ids" widget="list_activity"/>
+                                    <!--just for trial of dynamic tree view-->
+                                    <field name="gender" optional="hide"/>
+                                    <field name="ref" optional="hide"/>
+                                    <field name="doctor_id" widget="many2one_avatar_user"/>
+
+
+                                    <!--                &lt;!&ndash; Another colum named state and decorate this colum using decoration-success,decoration-danger, decoration-muted,  decoration-info&ndash;&gt;-->
+                                    <!--                decoration-success- green -->
+                                    <!--                decoration-danger = red  -->
+                                    <!--                decoration-warning= orange -->
+                                    <!--                decoration-info= no color -->
+                                    <field name="state" decoration-success="state == 'done'"
+                                           decoration-danger="state == 'cancle'"
+                                           decoration-warning="state == 'in_consultation'"
+                                           decoration-info="state == 'draft'" widget="badge"/>
+
+                                </tree>
+
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="patient_id"/>
+                                            <field name="gender"/>
+                                            <field name="ref"/>
+                                            <field name="doctor_id" widget="many2one_avatar"/>
+
+                                        </group>
+                                        <group>
+                                            <!--                            hide sales field for hide the sales_price-->
+                                            <!--                                Add 'groups' for show this field only in debug mode-->
+                                            <field name="hide_sales_price" groups="base.group_no_one"/>
+                                            <field name="appointment_time"/>
+                                            <field name="booking_date" default_focus="1"/>
+                                            <!--                                Add 'groups' for show this button only in debug mode-->
+                                            <button name="action_test" string="Object Button"
+                                                    confirm="Are you ready for action button Action?"
+                                                    help="On clicking this object button this will print a messege in python log"
+                                                    groups="base.group_no_one" type="object" class="oe_highlight"/>
+                                            <!--                                Add 'groups' for show this button only in debug mode-->
+                                            <button name="304" string="Action Button"
+                                                    confirm="Are you ready for action button Action?" type="action"
+                                                    groups="base.group_no_one"
+                                                    help="On clicking this action button you will go to male filter page in Appiontment"
+                                                    class="oe_highlight"/>
+
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+                <!--           For add  Chatter-->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                <!--                End of chatter-->
+            </form>
+        </field>
+    </record>
+    <!--    End of form view-->
+
+
+    <!--For Search view-->
+    <record id="view_hospital_patient_search" model="ir.ui.view">
+        <field name="name">hospital.patient.search</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Patient Name"
+                       filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]"/>
+                <field name="ref"/>
+                <field name="age"/>
+                <field name="gender_new"/>
+
+                <!--                for create a male serching button in filter in patient page-->
+                <filter name="filter_male" string="Male" domain="[('gender_new', '=', 'male')]"/>
+                <!--                male filter-->
+                <!--                female filter-->
+                <filter name="filter_female" string="Female" domain="[('gender_new', '=', 'female')]"/>
+                <!--                female filter-->
+
+                <!--                use separator for male and female theke kid k alada korar jonno-->
+                <!--                <separator/>-->
+
+                <!--                <filter name="filter_kids" string="Kids" domain="[('age', '&lt;=', 5)]"/>-->
+                <separator/>
+                <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_gender" string="Gender" context="{'group_by': 'gender_new'}"/>
+                </group>
+                <!-- For search panel view like categories               -->
+                <searchpanel>
+                    <field name="gender_new" select="multi" icon="fa-users" enable_counters="1"/>
+                </searchpanel>
+                <!--end of Search panel view-->
+            </search>
+        </field>
+    </record>
+    <!--End of search view-->
+
+
+    <record id="action_hospital_patient" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.patient</field>
+        <field name="view_mode">tree,form</field>
+
+        <field name="context">{'search_default_filter_male':1, 'search_default_group_by_gender':1}
+        </field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create Your First patient!
+            </p>
+        </field>
+    </record>
+
+
+
+
+</odoo>

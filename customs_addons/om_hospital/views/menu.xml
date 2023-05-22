@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_hospital_root"
+              name="Hospital"
+              web_icon="om_hospital,static/description/icon.png"
+              sequence="0"/>
+    <menuitem id="menu_patient_root"
+              name='Patient Details'
+              parent="menu_hospital_root"
+              sequence="0"/>
+    <menuitem id="menu_patient"
+              name="Patients"
+              action="action_hospital_patient"
+              parent="menu_patient_root"
+              sequence="0"/>
+    <menuitem id="menu_female_patient"
+              name="Female Patients"
+              action="action_hospital_female_patient"
+              parent="menu_patient_root"
+              sequence="0"/>
+    <menuitem id="menu_fmale_patient"
+              name="Male Patients"
+              action="action_hospital_male_patient"
+              parent="menu_patient_root"
+              sequence="0"/>
+    <menuitem id="menu_kids_patient"
+              name="Kids Patients"
+              action="action_hospital_kids_patient"
+              parent="menu_patient_root"
+              sequence="0"/>
+
+    <menuitem id="menu_appointment_root"
+              name='Appointments'
+              parent="menu_hospital_root"
+              sequence="0"/>
+
+    <menuitem id="menu_appointment"
+              name="Appointments"
+              action="action_hospital_appointment"
+              parent="menu_appointment_root"
+              sequence="0"/>
+
+    <menuitem id="menu_configuration"
+              name='Configurations'
+              parent="menu_hospital_root"
+              sequence="100"/>
+    <menuitem id="hospital_config_settings_menu"
+              name="Settings"
+              parent="om_hospital.menu_configuration"
+              sequence="0"
+              action="fleet_config_settings_action"
+              groups="base.group_system"/>
+    <menuitem id="menu_hospital_operation"
+              name="Operations"
+              action="action_hospital_operation"
+              parent="menu_configuration"
+              sequence="20"/>
+    <menuitem id="patient_tag"
+              name="Tag"
+              action="action_patient_tag"
+              parent="menu_configuration"
+              sequence="10"/>
+
+    <menuitem id="menu_cancel_appointment"
+              name='Cancellation'
+              action="action_cancel_appointment"
+              parent="menu_appointment_root"
+              sequence="20"/>
+
+    <menuitem id="menu_technical"
+              name="Technical"
+              parent="menu_hospital_root"
+              sequence="111"/>
+    <menuitem id="menu_playground1"
+              name="Play Ground"
+              parent="menu_technical"
+              action="action_playground"
+              sequence="11"/>
+    <menuitem id="report_menu_test"
+              name="Reporting"
+              parent="menu_hospital_root"
+              sequence="120"/>
+
+    <menuitem id="menu_patient_report"
+              name="Patients"
+              parent="report_menu_test"
+              action="action_report_patient"
+              sequence="100"/>
+
+    <menuitem id="menu_appointment_report_tu"
+              name="Appointments"
+              parent="report_menu_test"
+              action="action_report_appointment"
+              sequence="1"/>
+
+
+    <!--        <menuitem id="menu_playground"-->
+    <!--                  name = 'Play G'-->
+    <!--                  parent = "menu_hospital_root"-->
+    <!--                  sequence="0"/>-->
+
+
+</odoo>

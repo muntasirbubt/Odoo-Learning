@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_hospital_appointment" model="ir.actions.act_window">
+        <field name="name">Appointments</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.appointment</field>
+        <field name="view_mode">tree,form,activity</field>
+        <!--        <field name="view_id" ref="view_hospital_appointment_calendar1"/>-->
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face" style="color:red">
+                Create Your First appointment!
+            </p>
+        </field>
+    </record>
+
+    <record id="action_of_action_button" model="ir.actions.act_window">
+        <field name="name">Action Button</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.appointment</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{'search_default_filter_male':1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create Nothing but something!
+            </p>
+        </field>
+    </record>
+
+
+    <!--    For server action in odoo-->
+    <record id="action_mark_as_done" model="ir.actions.server">
+        <field name="name">Mark as Done</field>
+        <field name='type'>ir.actions.server</field>
+        <!--        Formet: model id ar reff hby model_modelName-->
+        <field name="model_id" ref="model_hospital_appointment"/>
+        <field name="binding_model_id" ref="model_hospital_appointment"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            for reco in records:
+                if reco.state == 'in_consultation':
+                    reco.action_done()
+        </field>
+    </record>
+
+
+    <!--    For Calendar View final-->
+    <!--    <record id="view_hospital_appointment_calendar1" model="ir.ui.view">-->
+    <!--        <field name="name">hospital.appointment.calendar</field>-->
+    <!--        <field name="model">hospital.appointment</field>-->
+    <!--        <field name="arch" type="xml">-->
+    <!--            <calendar string="Appointments" date_start="booking_date" date_delay="duration" color='state'-->
+    <!--                      quick_add="False" hide_time="True" event_limit="5" event_open_popup="True"-->
+    <!--                      form_view_id="%(om_hospital.view_hospital_appointment_form)d">-->
+    <!--                <field name="patient_id" filters='1'/>-->
+    <!--                <field name="state" invisible="1" filters='1' avatar_field='image'/>-->
+    <!--            </calendar>-->
+    <!--        </field>-->
+    <!--    </record>-->
+
+    <!--                    For tree view-->
+    <record id="view_hospital_appointment_tree" model="ir.ui.view">
+        <field name="name">hospital.appointment.tree</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <!--                    For remove/disable the create and duplicate= create="0",for edit&ndash;&gt;edit="0", delete="0",-->
+            <tree decoration-success="state == 'done'"
+                  decoration-danger="state == 'cancle'"
+                  decoration-warning="state == 'in_consultation'"
+                  decoration-info="state == 'draft'"
+                  sample='1'
+                  multi_edit="1">
+                <header>
+                    <button name='action_in_consultation' string='In Consultation' type='object'/>
+                </header>
+                <field name="sequence"/>
+                <field name="patient_id"/>
+                <!--                 For appointment time and booking time-->
+                <field name="appointment_time"/>
+                <!--                insert 'optional' keyword for Dynamic tree view-->
+                <field name="booking_date" optional="show"/>
+                <field name="activity_ids" widget="list_activity"/>
+                <!--just for trial of dynamic tree view-->
+                <field name="gender" optional="hide"/>
+                <field name="ref" optional="hide"/>
+                <field name='doctor_id' widget='many2one_avatar_user'/>
+                <!--                <field name="total_amount"/>-->
+
+                <!--                &lt;!&ndash; Another colum named state and decorate this colum using decoration-success,decoration-danger, decoration-muted,  decoration-info&ndash;&gt;-->
+                <!--                                decoration-success- green, decoration-danger = red ,decoration-warning= orange ,decoration-info= no color -->
+                <field name='state' decoration-success="state == 'done'"
+                       decoration-danger="state == 'cancle'"
+                       decoration-warning="state == 'in_consultation'"
+                       decoration-info="state == 'draft'"
+                       widget='badge'/>
+                <button name='action_done' type='object' class="fa fa-check btn-success"
+                        attrs="{'invisible':[('state','!=','in_consultation')]}"/>
+                <button name='%(om_hospital.action_cancel_appointment)d'
+                        context="{'default_reason':'komu nah', 'hide_appointment':1}"
+                        attrs="{'invisible':[('state','not in',('draft','in_consultation'))]}"
+                        type='action'/>
+                <!--                To add a button inside Group By Tree View-->
+                <groupby name="patient_id">
+                    <button name="action_test" string="Click Me" type="object" class="oe_highlights"/>
+                    <button name="Edit" string="edit" type="edit"/>
+                </groupby>
+                <field name="progress" widget="progressbar"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <!--End of activity view-->
+
+    <!--For form view-->
+    <record id="view_hospital_appointment_form" model="ir.ui.view">
+        <field name="name">hospital.appointment.form</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+                <!--For statusbar-->
+                <header>
+                    <button name='action_in_consultation' string='In Consultation' type='object' states='draft'
+                            class="oe_highlight" data-hotkey='i'/>
+
+                    <!-- states added in done because mark as done button will show when record is in 'in_consultations' state-->
+                    <button name='action_done' string='Mark as Done' type='object'
+                            states='in_consultation,cancle' class="oe_highlight" data-hotkey='v'/>
+
+                    <button name='action_share_whatsapp' string='Share in Whatsapp'
+                            type='object' class="oe_highlight" data-hotkey='w' icon='fa-whatsapp'/>
+
+                    <!--context = "{'default_appointment_id':active_id}"-->
+                    <button name='%(om_hospital.action_cancel_appointment)d' string='Cancel' type='action'
+                            context="{'default_reason':'komu nah', 'hide_appointment':1}" states="draft,in_consultation"
+                            data-hotkey='z'/>
+                    <!--                    <button name='action_cancel' string='Cancel' type='object' states="draft,in_consultation"-->
+                    <!--                            data-hotkey='z'/>-->
+                    <button name='action_draft' string='Reset to Draft' type='object' states="cancle" data-hotkey='r'/>
+
+
+                    <!--  options="{'clickable':'1'}"-->
+                    <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,in_consultation,done"/>
+                </header>
+                <!--End of status bar-->
+                <sheet>
+                    <!-- for prioroty in the data-->
+                    <div class="oe_title">
+                        <h2>
+                            <field name="sequence"/>
+                        </h2>
+
+                        <h1>
+                            <field name="priority" widget="priority" class="mr-5"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <!--  add widget ="selection". Now we cannot create manually new patient from appointment view ,we need to select the patient name from existing patient-->
+                            <field name="patient_id" widget="selection"/>
+                            <field name="gender"/>
+                            <field name="ref"/>
+                            <field name='doctor_id' widget='many2one_avatar'/>
+                            <field name='operation_id'/>
+                            <field name="duration"/>
+
+                        </group>
+                        <group>
+                            <!--                            hide sales field for hide the sales_price-->
+                            <!--                                Add 'groups' for show this field only in debug mode-->
+                            <field name="hide_sales_price" groups="base.group_no_one"/>
+                            <field name="appointment_time"/>
+
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+
+                            <field name="booking_date" default_focus='1'/>
+
+                            <!--                                Add 'groups' for show this button only in debug mode-->
+                            <button name="action_test" string='Object Button'
+                                    confirm='Are you ready for action button Action?'
+                                    help="On clicking this object button this will print a messege in python log"
+                                    groups="base.group_no_one"
+                                    type="object" class="oe_highlight"/>
+
+                            <button name="action_notification" string='Notification Button'
+                                    confirm='Are you ready for action button Action?'
+                                    groups="base.group_no_one"
+                                    type="object" class="oe_highlight"/>
+
+                            <!--                                Add 'groups' for show this button only in debug mode-->
+                            <button name="%(action_of_action_button)d" string='Action Button'
+                                    confirm='Are you ready for action button Action?' type="action"
+                                    groups="base.group_no_one"
+                                    help="On clicking this action button you will go to male filter page in Appiontment"
+                                    class="oe_highlight"/>
+
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Progress" name="progress">
+                            <!--                       For percentpie-->
+                            <!--                            <field name="progress" widget="percentpie"/>-->
+                            <!--                       For widget gauge-->
+                            <field name="progress" widget="gauge" options="{'style': 'width:200px; height: 150px;'}"/>
+                        </page>
+                        <page string='Prescription' name='prescription'>
+                            <!--                        For html feild-->
+                            <!--                        In the html feild we add options for collaborative and for resizable -->
+                            <field name="prescription" placeholder="Enter you prescription"
+                                   options="{'collaborative' :true, 'resizable': true, 'codeview':True }"/>
+                        </page>
+                        <page string='Pharmacy' name="pharmacy">
+                            <!--         For one2Many feild-->
+                            <field name="pharmacy_line_ids">
+                                <!--              editbale 'bottom' dily form view te e dirictly edit kora jabe-->
+                                <!--              editbale 'top' dily form view te e dirictly edit kora jabe-->
+                                <tree editable='bottom'>
+                                    <field name="sl_no" readonly="1"/>
+                                    <!--             Tree view for pharmacy page of nootebook-->
+                                    <field name="product_id"/>
+                                    <!--             Hide One2many Column Based On Parent Record-->
+                                    <!--  for monetary widget  add widget="monetary" -->
+                                    <field name="price_unit"
+                                           widget="monetary"
+                                           options="{'currency_field':'company_currency_id', 'field_digits':True}"
+                                           attrs="{'column_invisible': [('parent.hide_sales_price', '!=',  False)]}"
+                                    />
+                                    <field name="qty"/>
+                                    <field name="company_currency_id" invisible='1'/>
+                                    <field name="price_subtotal" readonly="1"/>
+                                    <!--    <field name="total_amount" readonly="1"/>-->
+                                </tree>
+                                <!--                Form view for pharmacy page of nootebook-->
+                                <form>
+                                    <group>
+                                        <field name="sl_no" readonly='1'/>
+
+                                        <field name="product_id"/>
+                                        <!--        Hide One2many Column Based On Parent Record-->
+                                        <field name="price_unit"
+                                               attrs="{'column_invisible': [('parent.hide_sales_price', '!=',  True)]}"
+                                        />
+                                        <field name="qty"/>
+                                        <field name="price_subtotal" readonly="1"/>
+                                    </group>
+<!--                                    <field name="total_amount" readonly="1"/>-->
+                                </form>
+<!--                                <field name="total_amount"/>-->
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <!-- For add  Chatter-->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                <!--                End of chatter-->
+            </form>
+        </field>
+    </record>
+    <!--End of form view-->
+
+
+    <!--For Search view-->
+    <record id="view_hospital_appointment_search" model="ir.ui.view">
+        <field name="name">hospital.appointment.search</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <search>
+                <filter name="filter_male" string="Male" domain="[('gender', '=', 'male')]"/>
+
+            </search>
+        </field>
+    </record>
+
+
+    <!--    for action button create a new action-->
+
+
+</odoo>
