@@ -132,6 +132,9 @@
                     <button name='action_share_whatsapp' string='Share in Whatsapp'
                             type='object' class="oe_highlight" data-hotkey='w' icon='fa-whatsapp'/>
 
+                    <button name='action_send_mail' string='send in Mail'
+                            type='object' class="oe_highlight" data-hotkey='m'/>
+
                     <!--context = "{'default_appointment_id':active_id}"-->
                     <button name='%(om_hospital.action_cancel_appointment)d' string='Cancel' type='action'
                             context="{'default_reason':'komu nah', 'hide_appointment':1}" states="draft,in_consultation"
@@ -246,10 +249,16 @@
                                         <field name="qty"/>
                                         <field name="price_subtotal" readonly="1"/>
                                     </group>
-<!--                                    <field name="total_amount" readonly="1"/>-->
                                 </form>
-<!--                                <field name="total_amount"/>-->
+
+                                <!--                                <field name="total_amount"/>-->
                             </field>
+                            <group name="amount_total_group" col="6" class="mt-2 mt-md-0">
+                                <group class="oe_subtotal_footer oe_right" colspan="2"
+                                       name="group_appointment_total">
+                                    <field name="amount_total" colspan="2" style="font-weight:bold;"/>
+                                </group>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>

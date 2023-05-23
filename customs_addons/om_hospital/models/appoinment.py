@@ -48,7 +48,7 @@ class HospitalAppointment(models.Model):
     # for progress widget
     progress = fields.Integer(string="Progress", compute="_compute_progress")
     # For Calculating the total amount
-    total_amount = fields.Monetary(string="Total", compute="_compute_total_amount",currency_field='currency_id')
+    amount_total = fields.Monetary(string="Total", compute="_compute_total_amount",currency_field='currency_id')
 
     @api.depends('pharmacy_line_ids')
     def _compute_total_amount(self):
@@ -136,6 +136,16 @@ class HospitalAppointment(models.Model):
             'target': 'new',
             'url': whatsapp_api_url
         }
+
+    def action_send_mail(self):
+        template = self.env.ref('om_hospital.appointment_mail_template')
+        print(template)
+        for rec in self:
+            if rec.patient_id.email:
+                email_values = {
+                'subject' :'Test OM'}
+                # force_send = True korly imediately mail send korbe
+                template.send_mail(rec.id,force_send=True)
 
     def action_in_consultation(self):
         for rec in self:
